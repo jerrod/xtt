@@ -1,0 +1,51 @@
+<% content_for :status do %>
+  <% form_for current_user.statuses.build, { :style => "width: 90%"} do |f| -%>
+  	<%= f.text_field :code_and_message, :class => 'status-entry', :value => "@#{@membership.code} " %>
+    <p class="btns">
+      <%= hidden_field_tag :destination, project_path(@project) %>
+      <%= update_button %>
+    </p>
+  <% end %>
+<% end #status %>
+
+<div id="project">
+  <h2>project: <b><%=h @project.name %></b></h2>
+
+  <ol id="timeline" class="media-list">
+    <% prev_status = '' %>
+
+    <% if @statuses.each_with_index do |status, index| -%>
+      <li class="hentry media-item clearfix<%= %( last) if first_in_collection?(@statuses, index) %><%= %( daybreak)  if (status.created_at.day != prev_status.created_at.day) rescue '' %>">
+        <% if (index == 0) || (status.created_at.day != prev_status.created_at.day) %>        
+        <p class="day-break" style="display:none">
+          <span class="num"><%= js_day_name status.created_at %></span>
+          <span class="day"><%= js_datetime status.created_at, :short %></span>
+        </p>
+        <% else  %>
+        <span class="time-span" style="display:none"><%= status.created_at.to_s :time %></span>
+        <% end -%>
+        <% prev_status = status %>
+        <div class="media vcard author">
+          <%= link_to gravatar_for(status.user), status.user %>
+        </div>
+        <div class="media-content">
+          <h4 class="media-title status"><%= link_to(status_for(status), status, :class => 'entry-title entry-content') %></h4>
+          <p class="quiet">posted by <%= link_to(h(status.user.login), status.user) %>,  <%= status_at status %> from <strong><%=h status.source || "the web" %></strong></p>
+          <% if status.processed? -%>
+          <span class="others">
+            <span class="num"><%= status.hours.to_f %></span>
+            <span class="meta">hours</span>
+          </span>
+          <% elsif !status.out? %>
+          <span class="others">
+            <span class="num livetime" title="<%= status.created_at.utc.strftime("%d %b, %Y %I:%M %p") %>"><%= status.hours.to_f %></span>
+            <span class="meta">logged</span>
+          </span>
+          <% end %>
+        </div>
+      </li>
+    <% end.empty? -%>
+      <li class="last">No status updates have been posted yet.</li>
+    <% end -%>
+  </ol>
+</div>

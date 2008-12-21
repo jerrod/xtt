@@ -1,0 +1,25 @@
+<% box(:special, 'import') do |box| %>
+  <% box.title = "Import data "%>
+  <% box.content = capture do %>
+  <div id="profile-import">
+    <% if !@statuses.empty? %>
+    There were some errors with your import.  These errors are, in order:
+    <ul>
+      <% @statuses.each do |status| %>
+      <li><%=h status.errors.full_messages.to_sentence %></li>
+      <% end %>
+    </ul>
+    Your other statuses imported fine.  You can ignore this page, or fix and reimport below.
+    <% else %>
+    Import data here.  This will create all-new records.  You can reorder the heading row, if you like.
+    <% end %>
+  
+    <% form_for @current_user.statuses.build, :html => { :class => "form" } do |f| %>
+      <p><textarea name="import" style="width:100%" rows="10">created_datetime,finished_datetime,code_and_message
+<%= FasterCSV.generate(:force_quotes => true) { |csv| @statuses.each { |status| csv << [status.created_at, status.finished_at, (status.project ? "@#{status.project.code} " : "") + h(status.message.to_s.gsub('"', '""'))] } } -%>
+</textarea></p>
+      <p class="btns"><input type="image" src="/images/btns/ghost.png" class="btn" /></p>
+    <% end %>
+  </div>
+  <% end %>
+<% end %>

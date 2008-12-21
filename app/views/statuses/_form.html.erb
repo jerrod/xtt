@@ -1,0 +1,93 @@
+<% raise "Sorry, didn't realize we were still using this partial" %>
+<% form_for status, :html => { :class => 'form' } do |f| %>
+
+  <div id="big-timer" style="font-size:200%; float:right; background-color:#aaa;padding:10px;border:1px solid #888">
+    <%= nice_time status.accurate_time %>
+  </div>
+  <p>
+    <label for="status_created_at">Start time</label>
+    <input type="text" id="status_created_at" name="status[set_created_at]" value="<%=h status.created_at.strftime("%a, %d %b %T UTC %Y") %>" size="40" class="utc" />
+  </p>
+  <% if status.previous %>
+  <p class="hint">
+    This will adjust the finish time of previous, <%= link_to_status status.previous %>
+    (<%= nice_timer_for status.previous %>)
+  </p>
+  <p>
+    You can't start this status before <span class="utc"><%=h status.previous.created_at.strftime("%a, %d %b %T UTC %Y") %></span>  unless you delete the previous status.
+  </p>
+  <% end %>
+
+    <hr />
+
+  <% if status.followup %>
+    <p><label for="status_followup_time">Finish time</label>
+       <input type="text" id="status_followup_time" name="status[followup_time]" value="<%=h status.followup_time.strftime("%a, %d %b %T UTC %Y") %>" class="utc" size="40" />
+    </p>
+    <p class="hint">
+      This will adjust the start time of next status, <%= link_to_status status.followup %>
+      (<%= nice_timer_for status.followup %>)
+    </p>
+
+    <% if status.followup.followup %>
+      <input type="hidden" name="maximum-time" value="<%=h status.followup.followup_time if status.followup.followup %>" /> 
+      <p>You can't set the finish time of this status past <span class="utc"><%=h status.followup.followup_time.strftime("%a, %d %b %T UTC %Y") %></span>.</p>
+    <% end %>
+
+    <% if status.followup.followup.nil? or status.followup.accurate_time > 30.minutes %>
+    <p id="time_setter">Set to
+      <a href="#">30 mins</a>
+      <% [1, 2, 3].each do |hour| %>
+        <% if status.followup.followup.nil? or (status.followup.followup_time > status.created_at + hour.hours) %>
+          | <a href="#"><%= pluralize hour, "hour" %></a> 
+        <% end # if -%>
+      <% end # each -%>
+    </p>
+    <!-- todo: limit the finish time by this value -->
+    <% else %>
+    <p>
+      The next status finishes in <%= nice_timer_for status.followup %>. You need to delete, merge,
+      or extend the next status if you went past this time.
+    </p>
+    <% end %>
+  <% else %>
+
+    <p>This status is still active (<%= nice_timer_for status %>)</p>
+  <% end %>
+  <hr />
+  <p>
+    <input type="reset" value="Reset form" onclick="set_big_timer()" />
+    <input type="submit" value="Save" style="float:right" />
+  </p>
+
+  <% content_for :dom_loaded do %>
+   // $$('#time_setter a').each(function(i){ i.onclick = function(){ 
+   //  setHours('status_created_at', 'status_followup_time', this);
+   //  return false
+   //}});
+   //Event.observe($('status_followup_time'), 'change', set_big_timer);
+   //Event.observe($('status_followup_time').form, 'reset', set_big_timer);
+   //Event.observe($('status_created_at'), 'change', set_big_timer); 
+  <% end %>
+
+  <script type="text/javascript">
+  // function setHours(base, input, link){
+  //   var hours = link.innerHTML.split(" ");
+  //   multiplier = 1;
+  //   switch(hours[1]) {
+  //     case 'hour':
+  //     case 'hours': multiplier = 60;
+  //   }
+  //   var minutes = parseInt(hours[0]) * multiplier * 1000;
+  //   var date = Date.parse($(base).defaultValue);
+  //   $(input).value = new Date(date + minutes * 60); //.toUTCString();
+  //   set_big_timer();
+  // }
+  // function set_big_timer() {
+  //   if ($('status_followup_time') && $('status_created_at')) {
+  //     var timer = Date.parse($('status_followup_time').value) - Date.parse($('status_created_at').value);
+  //     $('big-timer').innerHTML = XTT.nice_time(timer / 1000);
+  //   }
+  // }
+  </script>
+<% end %>

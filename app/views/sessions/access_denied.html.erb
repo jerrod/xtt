@@ -1,0 +1,9 @@
+<div class="mblock special" id="session">
+  <div class="mblock-cnt">
+	<% if logged_in? -%>
+		<p>Sorry, you don't have access to this page.</p>
+	<% else -%>
+		<p>You must <%= link_to 'log in', login_path(:to => h(params[:to]))%> before viewing this page.</p>
+	<% end -%>
+  </div>
+</div>

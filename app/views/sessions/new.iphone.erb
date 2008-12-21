@@ -1,0 +1,43 @@
+<div class="mblock special">
+  <div class="mblock-hdr">
+    Sign in to your account
+  </div>
+  <div class="mblock-cnt">
+    <% form_tag session_path, :class => 'form' do -%>
+    <div id="unamepass">
+    <p>
+      <label for="login">Login (<a id="use-openid" href="#openid">Use OpenID</a>)</label>
+      <%= text_field_tag 'login' %>
+    </p>
+
+    <p><label for="password">Password</label>
+    <%= password_field_tag 'password' %></p>
+
+    <p><label for="remember_me">Remember me:</label>
+    <%= check_box_tag 'remember_me', :checked => 'checked' %></p>
+    </div>
+    <div id="openid" style="display:none">
+      <p>
+        <label for="openid_url">OpenID (<a id="use-standard" href="#standard">Standard Login</a>)</label>
+        <%= text_field_tag "openid_url" %>
+      </p>
+    </div>
+
+    <p><%= submit_tag 'Log in' %></p>
+    <% end -%>
+  </div>
+</div>
+
+<% content_for :dom_loaded do %>
+
+  $('use-openid').observe('click', function() {
+    $('unamepass').hide();
+    $('openid').show();
+  });
+  
+  $('use-standard').observe('click', function() {
+    $('openid').hide();
+    $('unamepass').show();
+  })
+
+<% end %>

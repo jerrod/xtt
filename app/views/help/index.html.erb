@@ -1,0 +1,71 @@
+<% box(:special, 'project-header') do |box| %>
+  <% box.title = "Getting Started" %>
+  <% box.content = capture do %>
+
+  <ul class="media-list">
+
+      <li>Congratulations, you're the proud owner of a new account. Where to start?</li>
+
+      <li>
+        <h3>Philosophy</h3>
+        <p>The important thing to remember is that time is always ticking.  No matter what you're doing,
+        there she is, in the background, patiently waiting for you to notice her again.</p>
+      </li>
+  
+      <li>
+        <h3>1. Create some projects</h3>
+        <p>You'll want to create some projects, in order to start recording your time.  You may have
+          two, five, or even ten projects.  Each project gets a short code you can use in your status
+          messages to assign work to that project.</p>
+      </li>
+      
+      <li>
+        <h3>2. What are you working on?</h3>
+        <p>Now you record your current status and assign it to a project; or if there's no project
+        (such as "commuting", or "sleep") you just don't assign a code.</p>
+  
+        <div class="example">
+          <pre><code>Grocery shopping</code></pre>
+          <pre><code>@test Writing code for ticket #34</code></pre>
+        </div>
+      </li>
+      
+      <li>
+        <h3>3. Become a power user</h3>
+        <p>Add your AIM username to your profile, and add <b>xttbot</b> to your AIM buddies (ichat, adium).</p>
+        <p>Ask xttbot for <b>help</b>, for your list of <b>projects</b>, available <b>commands</b>, or your
+        current <b>status</b>.  xttbot can also take your status updates.
+        </p>
+      </li>
+
+      <li>
+        <h3>4. Invite other users</h3>
+        <p>You can invite other users to your project. Other people can only see your statuses on projects they share with you.</p>
+      </li>
+      
+      <li>
+        <h3>5. What's next?</h3>
+        <p>Soon you'll be able to invite other users to your projects.</p>
+        <p>We're working hard on integrating external sources of data; so, for example, reading RSS feeds of
+          your SCM commit history; or to watch your AIM away status to automatically sign you out.
+        </p>
+        <p>Found a bug?  email <code>courtenay+xtt</code>@entp.com
+      </li>
+  </ul>
+
+  <% end %>
+<% end %>
+
+<% content_for :head do %>
+<style type="text/css">
+
+.example pre {
+  background-color: #ff9;
+  padding: 10px;
+  margin: 10px 0;
+}
+.media-list p {
+  margin: 5px 0;
+}
+</style>
+<% end %>

@@ -1,0 +1,117 @@
+<% box(:special, 'project-header') do |box| %>
+  <% box.title = "What are you doing?" %>
+  <% box.content = capture do %>
+    <% form_for current_user.statuses.build do |f| -%>
+      <ul class="media-list">
+        <li class="media-item status-form last">
+          <%= f.text_area :code_and_message, :rows => 2, :cols => 55, :class => 'status-entry' %>
+    			<p class="btns">
+    			  <%= img_button 'out' %>
+						<%= update_button %>
+					</p>
+        </li>
+        <li id="project-head">
+          <h2><%=h @user.login %></h2>
+        </li>
+        <li class="clearfix" style="border-bottom:0">
+<%= render :partial => "statuses/chart", :locals => {:hours => @hours, :date_range => @date_range} %>
+        </li>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="mblock">
+  <div class="mblock-hdr">
+    <h3><%= h(@user.login) %> Timeline</h3>
+    <div class="utils">
+			<%= link_to_filtered_statuses(:Daily, :filter => :daily, :date => nil) %>
+			<%= link_to_filtered_statuses(:Week,  :filter => :weekly, :date => nil) %>
+			<%= link_to_filtered_statuses('Bi-weekly', :filter => :'bi-weekly', :date => nil) %>
+			<%= link_to_filtered_statuses(:Month, :filter => :monthly, :date => nil) %>
+    </div>
+  </div>
+  <div class="mblock-cnt">
+    <ol id="timeline" class="media-list">
+    <% prev_status = '' %>
+		<% if @statuses.each_with_index do |status, index| -%>
+		  <% next if status.project && ! status.project.users.include?(current_user)  %>
+      <li class="hentry media-item clearfix<%= %( last) if first_in_collection?(@statuses, index) %><%= %( daybreak)  if (status.created_at.day != prev_status.created_at.day) rescue '' %>">
+        <% if (index == 0) || (prev_status == '') || (status.created_at.day != prev_status.created_at.day) %>        
+        <p class="day-break" style="display:none">
+          <span class="num"><%= js_day_name status.created_at %></span>
+          <span class="day"><%= js_datetime status.created_at, :short %></span>
+        </p>
+        <% else  %>
+        <span class="time-span" style="display:none"><%= status.created_at.to_s :time %></span>
+        <% end -%>
+        <% prev_status = status %>
+        
+        <div class="media vcard author">
+          <%= link_to gravatar_for(status.user), status.user %>
+        </div>
+        <div class="media-content">
+          <h4 class="media-title status"><%= link_to(status_for(status), status, :class => 'entry-title entry-content') %></h4>
+          <p class="quiet">
+						posted <strong><%= status_at status %></strong> 
+						from <%=h status.source || "the web" %>
+						<% if status.project? -%>to <%= link_to_filtered_statuses h(status.project.name), :filter => params[:filter], :date => params[:date], :project => status.project %><% end -%>
+					</p>
+        <% if status.followup.nil? %>
+        <span class="others">
+          <span class="num"><%= nice_timer_for status %></span>
+          <span class="meta">logged</span>
+        </span>
+        <% else %>
+        <span class="others">
+          <span class="num"><%= status.hours.to_f %></span>
+          <span class="meta">hour<%= :s unless status.hours == 1.0 %></span>
+        </span>
+        <% end %>
+<!-->
+          <% if status.processed? -%>
+          <span class="others">
+            <span class="num"><%= status.hours.to_f %></span>
+            <span class="meta">hours</span>
+          </span>
+          <% end %>
+-->
+        </div>
+      </li>
+		<% end.empty? -%>
+			<li>No status updates have been posted yet.</li>
+		<% end -%>
+    </ol>
+		<%= will_paginate @statuses %>
+  </div>
+</div>
+
+<% box(:sidebar, 'projects') do |sbox| %>
+  <% sbox.title = "Projects" %>
+  <% sbox.content_classes = "nopad" %>
+  
+  <% sbox.content = capture do %>
+  <div id="projectlist">
+    <ul class="text-list" id="project-lists">
+    <% unless @memberships.empty? %>
+  	<% @memberships.each_with_index do |membership, index| -%>
+  	  <% project = membership.project %>
+      <li<%= %( class="last") if first_in_collection?(@memberships, index) %> id="project-<%= project.id %>">
+        <a href="<%= url_for_filtered_statuses :user_id => @user, :filter => params[:filter], :date => params[:date], :project => project %>">
+          <span class="ttl"><%=h project.name %></span>
+          <span class="desc">Send messages using <em>@<%=h membership.code %></em></span>
+        </a>
+        <div id="showcase-project-<%= project.id %>" style="display:none">
+          <h3>Edit <%= h(project.name) %></h3>
+          <%= error_messages_for :project %>
+            <% form_for project, :html => {:class => "form" } do |f| -%>
+            <%= render :partial => "projects/form", :object => f %>
+          <% end %>
+        </div>
+      </li>
+  	<% end -%>
+  	<% end -%>
+    </ul>
+  </div>
+  <% end %>
+<% end %>

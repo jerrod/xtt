@@ -1,0 +1,4 @@
+<% form_for current_user.owned_projects.new {}, :html => {:class => 'form' } do |f| %>
+  <%= render :partial => '/projects/form', :object => f %>
+  <p class="btns"><%= save_button %></p>
+<% end %>

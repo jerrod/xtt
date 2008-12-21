@@ -1,0 +1,76 @@
+<% params[:filter] = params.key?(:filter) ? params[:filter].to_sym : :weekly -%>
+<% if Status.filter_types.include?(params[:filter]) -%>
+	<% unless params[:filter] == :daily -%>
+	<% chart_labels = chart_labels_for(params[:filter], date_range) -%>
+  <% colors = ["224499", "6688AA", "bb9999","AABBCC","afafaf"] %>
+  
+  <% unless hours.empty? %>
+    <% days, chart_data, total = fudge_data_from(hours, chart_labels) %>
+    <% max = normalized_max(days) %>
+
+	  <% if params[:filter] == :monthly %>
+	    <%= image_tag(Gchart.bar(
+	       :encoding => 'text',
+         :bg => 'CACACA', 
+         :data => chart_data,
+         :line_colors => colors, #['224499'],
+         :size => '380x140',
+         :custom => "&amp;chg=0,25,1,0&amp;chxr=0,#{date_range.first.day},#{date_range.last.day}|1,0,#{max.to_i}&chds=0,#{max}&chbh=8",
+         :axis_with_labels => %w(x y)), :style => 'margin-top:27px', :id => "#{params[:filter]}-chart", :class => 'special-chart') %>
+	
+	  <% elsif [:'bi-weekly'].include?(params[:filter]) %>
+	  <%= image_tag(Gchart.bar(
+	     :encoding => 'simple',
+       :bg => 'CACACA', 
+       :max_value => max,
+       :data => chart_data,
+         :line_colors => colors, #['224499'],
+       :size => '380x140',
+       :custom => "&amp;chg=0,25,1,0&amp;chxr=0,#{date_range.first.day},#{date_range.last.day}|1,0,#{max.to_i}&chds=0,#{max}",
+
+#       :custom =>      "&amp;chm=B,4E77DD,0,0,0&amp;chg=0,25,1,0&amp;chbh=40&amp;chxr=0,#{date_range.first.day},#{date_range.last.day}|1,0,#{normalized_max(chart_data).to_i}",            
+       :axis_with_labels => %w(x y)), :style => 'margin-top:27px', :id => "#{params[:filter]}-chart", :class => 'special-chart') %>
+   
+    <% elsif params[:filter] == :weekly %>
+    <%= image_tag(Gchart.bar(
+	     :encoding => 'simple',
+       :bg => 'CACACA', 
+       :max_value => max,
+       :data => chart_data,
+         :line_colors => colors, #['224499'],
+       :axis_labels => [chart_labels, "0|#{(max / 2)}|#{max}"],
+       :size => '380x140',
+       :custom => "&amp;&amp;chg=0,25,1,0&amp;chbh=40&amp;chxr=0,#{date_range.first.day},#{date_range.last.day}|1,0,#{normalized_max(chart_data).to_i}",
+       :axis_with_labels => %w(x y)), :style => 'margin-top:27px', :id => "#{params[:filter]}-chart", :class => 'special-chart') %>
+    
+    
+    <% else %>
+    
+      <%= image_tag(Gchart.bar(
+         :bg => 'CACACA', 
+         :data => chart_data,
+         :line_colors => colors, #['224499'],
+         :max_value => max,
+         :bar_width => '100',
+         :size => '380x120',
+         :custom => "chxr=1,0,24&amp;chg=0,25,1,0&amp;chbh=40",            
+         :axis_labels => [chart_labels * "|"],
+         :axis_with_labels => %w(x y)), :style => 'margin-top:27px', :id => "#{params[:filter]}-chart", :class => 'special-chart') %>
+    
+    <% end %>
+  <% end -%>
+  <% end %>
+  
+  <% # This is the biggest hack of hacks. I don't care. I want my daily totals and shit's fucked backwards up there with fudge_numbers %>
+  <% total = fudge_total_daily_hours(@daily_hours) if params[:filter] == :daily && !@daily_hours.nil? %>
+  
+  <p class="special-num">
+    <span class="main-num"><%= number_with_precision total, '2' %></span>
+    <span class="quiet">
+      <%= period_to_sentence(params[:filter], date_range, total) %>
+    </span>
+    <%= paging_for_period(date_range) %>
+  </p>
+<% else -%>
+	<p>Invalid filter: <%=h params[:filter] %></p>
+<% end -%>

@@ -1,0 +1,15 @@
+<% content_for :special_box do %>
+<div class="mblock special" id="specialbox-<%= box.name %>">
+  <div class="mblock-hdr">
+    <% if box.header_utils %>
+    <div class="utils">
+      <%= box.header_utils %>
+    </div>
+    <% end %>
+    <h3><%= box.title %></h3>
+  </div>
+  <div class="mblock-cnt">
+    <%= box.content %>
+  </div>
+</div>
+<% end %>

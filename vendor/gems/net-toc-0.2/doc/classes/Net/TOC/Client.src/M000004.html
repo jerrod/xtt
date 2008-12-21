@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>connect (Net::TOC::Client)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File net/toc.rb, line 445</span>
+      <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">connect</span>(<span class="ruby-identifier">server</span>=<span class="ruby-value str">&quot;toc.oscar.aol.com&quot;</span>, <span class="ruby-identifier">port</span>=<span class="ruby-value">9898</span>, <span class="ruby-identifier">oscar_server</span>=<span class="ruby-value str">&quot;login.oscar.aol.com&quot;</span>, <span class="ruby-identifier">oscar_port</span>=<span class="ruby-value">5190</span>)
+        <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">server</span>, <span class="ruby-identifier">port</span>)
+        <span class="ruby-identifier">code</span> = <span class="ruby-value">7696</span> <span class="ruby-operator">*</span> <span class="ruby-ivar">@screen_name</span>[<span class="ruby-value">0</span>] <span class="ruby-operator">*</span> <span class="ruby-ivar">@password</span>[<span class="ruby-value">0</span>]
+        <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">toc2_signon</span>(<span class="ruby-identifier">oscar_server</span>, <span class="ruby-identifier">oscar_port</span>, <span class="ruby-ivar">@screen_name</span>, <span class="ruby-identifier">roasted_pass</span>, <span class="ruby-value str">&quot;english&quot;</span>, <span class="ruby-value str">&quot;\&quot;TIC:toc.rb\&quot;&quot;</span>, <span class="ruby-value">160</span>, <span class="ruby-identifier">code</span>)
+
+        <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">recv</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">msg</span>, <span class="ruby-identifier">val</span><span class="ruby-operator">|</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">msg</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">:sign_on</span>
+            <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">toc_add_buddy</span>(<span class="ruby-ivar">@screen_name</span>)
+            <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">toc_init_done</span>
+            <span class="ruby-identifier">capabilities</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">capability</span><span class="ruby-operator">|</span>
+              <span class="ruby-ivar">@conn</span>.<span class="ruby-identifier">toc_set_caps</span>(<span class="ruby-identifier">capability</span>)
+            <span class="ruby-keyword kw">end</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">end</span>
+        <span class="ruby-ivar">@thread</span>.<span class="ruby-identifier">kill</span> <span class="ruby-keyword kw">unless</span> <span class="ruby-ivar">@thread</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-comment cmt"># ha</span>
+        <span class="ruby-ivar">@thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">new</span> { <span class="ruby-identifier">loop</span> { <span class="ruby-identifier">event_loop</span> } }
+      <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>

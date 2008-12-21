@@ -1,0 +1,225 @@
+<% box(:special, 'project-header') do |box| %>
+  <% box.title = "What are you doing on #{h(@project.name)}?" %>
+  <% box.content = capture do %>
+    <% form_for current_user.statuses.build do |f| -%>
+      <ul class="media-list">
+        <li class="media-item status-form last">
+          <% f.object.code_and_message = "@#{@membership.code} " %>
+          <%= f.text_area :code_and_message, :rows => 2, :cols => 55, :class => 'status-entry' %>
+          <p class="btns">
+            <%= img_button 'out' %>
+            <%= hidden_field_tag :destination, project_path(@project) %>
+            <%= update_button %>
+          </p>
+        </li>
+        <li id="project-head">
+          <h2><%=h @project.name %></h2>
+        </li>
+        <li class="clearfix" style="border-bottom:0">
+          <%= render :partial => "statuses/chart", :locals => {:hours => @user_hours, :date_range => @date_range} %>
+        </li>
+      </ul>
+    <% end %>
+  <% end %>
+<% end %>
+
+<div class="mblock">
+  <div class="mblock-hdr">
+    <h3><%= h(@project.name) %> Timeline</h3>
+    <div class="utils">
+      <%= link_to_filtered_statuses(:Daily, :filter => :daily, :date => nil) %>
+      <%= link_to_filtered_statuses(:Week,  :filter => :weekly, :date => nil) %>
+      <%= link_to_filtered_statuses('Bi-weekly', :filter => :'bi-weekly', :date => nil) %>
+      <%= link_to_filtered_statuses(:Month, :filter => :monthly, :date => nil) %>
+    </div>
+  </div>
+  <div class="mblock-cnt">
+    <ol id="timeline" class="media-list">
+    <% prev_status = '' %>
+    <% if @statuses.each_with_index do |status, index| -%>
+      <li class="hentry media-item clearfix<%= %( last) if first_in_collection?(@statuses, index) %><%= %( daybreak)  if (status.created_at.day != prev_status.created_at.day) rescue '' %>">
+        <% if (index == 0) || (status.created_at.day != prev_status.created_at.day) %>        
+          <p class="day-break" style="display:none">
+            <span class="num"><%= js_day_name status.created_at %></span>
+            <span class="day"><%= js_datetime status.created_at, :short %></span>
+          </p>
+        <% else  %>
+          <span class="time-span" style="display:none"><%= status.created_at.to_s :time %></span>
+        <% end -%>
+        <% prev_status = status %>
+        
+        <div class="media vcard author">
+          <%= link_to gravatar_for(status.user), status.user %>
+        </div>
+        <div class="media-content">
+          <h4 class="media-title status"><%= link_to(status_for(status), status, :class => 'entry-title entry-content') %></h4>
+          <p class="quiet">posted by <%= link_to(h(status.user.login), status.user) %>,  <%= status_at status %> from <strong><%=h status.source || "the web" %></strong></p>
+          <% if status.processed? -%>
+            <span class="others">
+              <span class="num"><%= status.hours.to_f %></span>
+              <span class="meta">hours</span>
+            </span>
+          <% elsif !status.out? %>
+            <span class="others">
+              <span class="num livetime" title="<%= status.created_at.utc.strftime("%d %b, %Y %I:%M %p") %>"><%= status.hours.to_f %></span>
+              <span class="meta">logged</span>
+            </span>
+          <% end %>
+        </div>
+      </li>
+    <% end.empty? -%>
+      <li class="last">No status updates have been posted yet.</li>
+    <% end -%>
+    </ol>
+    <%= will_paginate @statuses %>
+  </div>
+</div>
+
+<% box(:sidebar, "tools") do |sbox| %>
+  <% sbox.title = "Invite someone to this project" -%>
+  <% sbox.content = capture do %>
+    <div id="invite">
+      <p>Invite someone to this project using their email or username.  Separate each item with a comma.</p>    
+    <% form_tag invite_project_path(@project), :class => 'form' do -%>
+      <p><%= text_area_tag :emails, '',  :rows => 3, :cols => 20  %></p>
+      <p class="btns"><%= save_button %></p>
+    <% end -%>
+    </div>
+    <% sbox.header_utils = %(
+      <div id="tool-tabs">
+        <a href="#invite">Invite</a>
+        <a href="#membership">Me</a>
+        <a href="#export">CSV</a>
+        <a href="#edit">Edit</a>
+      </div>) 
+    %>
+    <% content_for :dom_loaded do %>
+      <% unless @project.owned_by? current_user or current_user.admin? %>
+      $('tool-tabs').down('[href=#edit]').remove();
+      $('tool-tabs').down('[href=#export]').remove();
+      <% end %>
+      new Control.Tabs("tool-tabs", {
+        linkSelector: 'a',
+        afterChange: function(container) {
+          var item = container.readAttribute('id');
+          if(item == "edit") {
+            $('sbox-tools').down('h3').update("Edit this project");
+          } else if(item == "invite") {
+            $('sbox-tools').down('h3').update("Invite someone to this project");
+          } else if(item == "export") {
+            $('sbox-tools').down('h3').update("Export this project's data");
+          } else {
+            //$('sbox-tools').down('h3').update("Auto track updates");
+            $('sbox-tools').down('h3').update("Edit Membership");
+          }
+        }
+      });
+    <% end %>
+
+    <div id="membership" style="display:none">
+      <% form_for(@membership, :html => { :class => "form" }, :method => 'put') do |form| %>
+        <%= render :partial => 'memberships/form', :object => form %>
+        <p class="btns"><%= save_button %></p>
+      <% end %>
+  
+      <% if false %>
+      <!--
+      this shit is commented out because we don't track, yet.
+        <% if @project.feeds.size > 0 %>
+         <ul class="text-list">
+          <% @project.feeds.each_with_index do |feed, index| %>
+            <li<%= %( class="last") if first_in_collection?(@project.feeds, index) %>>
+              <span class="ttl"><%= link_to h(feed.name), feed %></span>
+              <span class="desc">Updated 10 minutes ago</span>
+            </li>
+          <% end %>
+          </ul>
+        <% end %>
+              
+        <% form_for @project.feeds.new, :html => {:class => 'form' } do |f| -%>       
+        <p>Have an RSS feed that you'd like to auto update this project with?</p>
+    
+          <%= f.hidden_field :project_id %>
+          <p>
+            <label for="project_feed_name">Give this feed a title</label>
+            <%= f.text_field :name %>
+          </p>
+          <p>
+            <label for="project_feed_url">URL of feed</label>
+            <%= f.text_field :url, :value => "http://" %>
+          </p>
+          <p class="btns"><%= save_button %></p>
+    
+        <% end -%>
+      -->
+      <% end %>
+    </div>
+  
+    <% if @project.owned_by? current_user or current_user.admin? -%>
+  
+      <div id="edit" style="display:none">
+        <%= error_messages_for :project %>
+        <% form_for @project, :html => {:class => 'form'} do |f| -%>
+        <%= render :partial => "form", :object => f %>
+          <p class="btns"><%= update_button %></p>
+        <% end -%>
+
+
+        <h2>Tendrils</h2>
+        <p>Tendrils reach out and communicate after you create a status. Useful for notifying a chat room of status changes.</p>
+        <ul>
+        <% @project.tendrils.each do |tendril| %>
+          <li><%=h tendril.notifies_type %>: <%=h tendril.notifies.domain %>
+            <% if tendril.notifies.user == current_user %><%= link_to 'edit', notify_path(:id => tendril.notifies.id) %><% end %>
+          </li>
+        <% end %>
+        </ul>
+
+
+      </div>
+    
+      <div id="export" style="display:none">
+        Navigate using the date, next/previous buttons below the graph and select your preferred output format to view.
+        <ul class="text-list">
+          <li><%= link_to "CSV", params.update(:format => 'csv') %></li>
+          <li><%= link_to "XML", params.update(:format => 'xml') %></li>
+        </ul>
+        <!-- todo: icon -->
+      </div>
+    <% end %>
+  <% end -%>
+<% end -%>
+
+<% box(:sidebar, 'people') do |sbox| %>
+  <% sbox.title = "Filter this project by a member" %>
+  <% sbox.content_classes = "nopad" %>
+  <% if params[:user_id] %>
+  <% sbox.header_utils =  link_to_filtered_statuses("Remove filter", {:user_id => :all}) %>
+  <% end %>
+  <% sbox.content = capture do %>
+   <ul class="media-list">
+    <% @project.users.each_with_index do |user, index| -%>
+      <li class="media-item clearfix<%= %( last) if first_in_collection?(@project.users, index) %>">
+        <div class="media">
+          <%= link_to gravatar_for(user), user %>
+        </div>
+        <div class="media-content">
+          <h4 class="media-title">
+            <%= link_to_filtered_statuses h(user.login), :user_id => (user == current_user ? :me : user), :date => nil %>
+            <% if user.id == @project.user_id -%>(owner)<% end -%>
+          </h4>
+          <p class="quiet"><% if user.last_status_id -%>Active <%= js_time_ago_in_words user.last_status_at %><% else -%>Inactive<% end -%></p>
+          <span class="you">
+            <span class="num"><%= number_with_precision @daily_hours.total(user.id), 2 %></span>
+            <span class="meta">today</span>
+          </span>
+          <span class="others">
+            <span class="num"><%= number_with_precision @hours.total(user.id), 2 %></span>
+            <span class="meta"><%=h params[:filter] %></span>
+          </span>
+        </div>
+      </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

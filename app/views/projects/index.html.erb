@@ -1,0 +1,24 @@
+<h1>Projects</h1>
+
+<% @projects.each do |project| -%>
+<div class="card">
+  <h2><%= link_to h(project.name), project %></h2>
+  <span class="timer"><%= project.statuses.sum_accurate_time %></span>
+  <%= project.hours %>
+  <% if statuses = project.statuses.select {|s| s.followup.nil? } and statuses.any? %>
+	  <table>
+	    <% statuses.each do |status| %>
+	    <tr>
+	      <td><%= link_to h(status.user.login), status.user %></td>
+	      <td><%=h status.message %></td>
+	      <% if false %><td><%= nice_timer_for status %></td><% end -%>
+	    </tr>
+	    <% end # status -%>
+    </table>
+  <% end %>
+</div>
+<% end -%>
+
+<div class="card" id="new_card">
+  <h2><%= link_to 'New Project', new_project_path %></h2>
+</div>

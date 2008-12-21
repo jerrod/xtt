@@ -1,0 +1,53 @@
+
+
+<% box :normal, 'form' do |box| %>
+  <% box.title = "Creating status" %>
+  <% box.content = capture do %>
+    <% form_for @status, :html => { :id => 'edit-status-times', 
+        :class => 'form', 
+        :style => (!@status.valid? or @status.active?) ? '' : 'display:none' } do |f| -%>
+      <%= f.error_messages %>
+      <table cellspacing="0" cellpadding="0" class="tblform">
+    <tr>
+      <th>
+        <%= f.label :message %>
+      </th>
+      <td>
+        <%= f.text_field :code_and_message %>
+      </td>
+    </tr>
+        <tr>
+          <th>
+            <%= f.label :created_at, "Start Time:" %>
+          </th>
+          <td>
+            <%= f.date_select :created_at %>
+            <%= f.time_select :created_at %>
+          </td>
+        </tr>
+        <% unless @status.active? -%>
+        <tr>
+          <th>
+            <%= f.label :finished_at, "End Time:" %>
+          </th>
+          <td>
+            <%= f.date_select :finished_at %>
+            <%= f.time_select :finished_at %>
+          </td>
+        </tr>
+        <% end -%>
+        <tr>
+          <td colspan="2">
+            <p class="btns"><%= save_button %> 
+            <%= hidden_field_tag :destination, params[:destination] %>
+            <% unless @status.active? %> or <%= link_to 'edit hours', '#', :class => 'edit-status-link' %><% end %></p>
+          </td>
+        </tr>
+      </table>
+    <% end -%>
+  <% end -%>
+<% end -%>
+
+<%= yield :normal_box %>
+
+<%= render :partial => "projects/sidebox" %>

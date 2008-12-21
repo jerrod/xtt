@@ -1,0 +1,77 @@
+<% box(:special, 'overview') do |box| %>
+  <% box.title = "What are you doing?" %>
+  <% box.content = capture do %>
+    <% form_for current_user.statuses.build do |f| -%>
+    <ul class="media-list">
+      <li class="media-item status-form">
+        <%= f.text_area :code_and_message, :rows => 2, :cols => 55, :class => 'status-entry' %>
+        <p class="btns">
+          <%= img_button 'out' %>
+          <%= hidden_field_tag :destination, users_path %>
+          <%= update_button %>
+        </p>
+      </li>
+      <li class="media-item clearfix last">
+        <div class="media">
+          <%= link_to gravatar_for(current_user), current_user %>
+        </div>
+      <% if current_user.last_status -%>
+        <div class="media-content">
+        <% if current_user.last_status_project -%>
+          <h4 class="media-title"><%= link_to_project current_user.last_status_project, "You're working on #{current_user.last_status_project.name}" %></h4>
+        <% end -%>
+          <p class="quiet"><%= link_to h(current_user.last_status_message), current_user.last_status %></p>
+          <% unless current_user.last_status.out? %>
+          <span class="others">
+            <span class="num livetime" title="<%= current_user.last_status.created_at.utc.strftime("%d %b, %Y %I:%M %p") %>"><%= current_user.last_status.hours.to_f %></span>
+            <span class="meta">logged</span>
+          </span>
+          <% end %>
+          
+          <%#= render :partial => "statuses/chart", :locals => {:hours => (@hours ||[]), :date_range => @date_range} %>
+
+          <%= image_tag Gchart.bar(
+            :bg => 'CACACA', 
+            :data => [1,2,4,2,3,5,1], 
+            :bar_colors => ['224499'],
+            :max_value => 'auto',
+            :size => '540x100',
+            :custom => "chxr=1,0,5&amp;chg=0,50,1,0&amp;chbh=60,10",            
+            :axis_labels => ["Sun|Mon|Tue|Wed|Thu|Fri|Sat"],
+            :axis_with_labels => %w(x y)), :style => 'margin-top:36px' if false %>
+        </div>
+      <% end -%>
+      </li>
+    </ul>
+    <% end -%>
+  <% end %>
+<% end %>
+
+<% unless current_user.related_users.blank? %>
+<% box(:normal, 'everyone') do |box| %>
+  <% box.title = "What's everyone else doing?" %>
+  <% box.content = capture do %>
+    <ul id="timeline" class="media-list">
+    <% current_user.related_users.each_with_index do |user, index| -%>
+      <li class="media-item clearfix<%= %( last) if first_in_collection?(current_user.related_users, index) %>">
+        <div class="media">
+          <%= link_to gravatar_for(user), user %>
+        </div>
+        <div class="media-content">
+          <h4 class="media-title"><%= link_to_user user %> <%= status_summary user.last_status_project %></h4>
+          <p class="quiet"><%= status_for user %></p>
+          <span class="datetime"><%= status_at user %></span>
+        </div>
+      </li>
+    <% end -%>
+    </ul>
+  <% end #content %>
+  <%# box.footer = capture do %>
+  <%# <a href="#">5 other people haven't logged anything today &raquo;</a> %>
+  <%# end # footer %>
+<% end %>
+<% end %>
+
+<%= yield :normal_box %>
+
+<%= render :partial => "projects/sidebox" %>

@@ -1,0 +1,20 @@
+<% content_for :normal_box do %>
+<div class="mblock" id="normalbox-<%= box.name %>">
+  <div class="mblock-hdr">
+    <% if box.header_utils %>
+    <div class="utils">
+      <%= box.header_utils %>
+    </div>
+    <% end %>
+    <h3><%= box.title %></h3>
+  </div>
+  <div class="mblock-cnt">
+    <%= box.content %>
+  </div>
+  <% if box.footer %>
+  <div class="mblock-footer">
+    <%= box.footer %>
+  </div>
+  <% end %>
+</div>
+<% end %>

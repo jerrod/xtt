@@ -1,0 +1,68 @@
+<div class="mblock special" id="session">
+  <div class="mblock-hdr">
+	  <div class="utils" id="tool-tabs">
+	    <a href="#signin">Sign in</a>
+	    <a href="#reset">Forget your password?</a>
+	  </div>
+    <h3>Sign in to your account</h3>
+  </div>
+  <div class="mblock-cnt">
+    <div id="signin">
+      <% form_tag session_path, :class => 'form' do -%>
+      <div id="unamepass">
+        <p><label for="login">Login (<a id="use-openid" href="#openid">Use OpenID</a>)</label>
+        <%= text_field_tag 'login' %></p>
+
+        <p><label for="password">Password</label>
+        <%= password_field_tag 'password' %></p>
+
+        <p><label for="remember_me"><%= check_box_tag 'remember_me' %> Remember me</label></p>
+      </div>
+      <div id="openid" style="display:none">
+        <p>
+          <label for="openid_url">OpenID (<a id="use-standard" href="#standard">Standard Login</a>)</label>
+          <%= text_field_tag "openid_url" %>
+        </p>
+      </div>
+      <p class="btns">
+				<%= img_button('signin') %>
+				<%= hidden_field_tag :to, params[:to] unless params[:to].blank? %>
+			</p>
+    <% end -%>
+    </div>
+
+    
+    <div id="reset">
+			<% form_tag reset_password_users_path, :class => 'form' do -%>
+      <p><label for="email">Email</label>
+      <%= text_field_tag 'email' %></p>
+      <p class="btns"><%= img_button('send') %></p>
+			<% end -%>
+    </div>
+  </div>
+</div>
+
+<% content_for :dom_loaded do %>
+
+  $('use-openid').observe('click', function() {
+    $('unamepass').hide();
+    $('openid').show();
+  });
+  
+  $('use-standard').observe('click', function() {
+    $('openid').hide();
+    $('unamepass').show();
+  })
+  
+  new Control.Tabs("tool-tabs", {
+    linkSelector: 'a',
+    afterChange: function(container) {
+      var item = container.readAttribute('id');
+      if(item == "signin") {
+        $('session').down('h3').update("Sign in to your account");
+      } else if(item == "reset") {
+        $('session').down('h3').update("Reset your password");
+      }
+    }
+    });
+<% end %>

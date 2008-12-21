@@ -1,0 +1,37 @@
+<p>
+	<%= form.label :login %>
+  <%= form.text_field :login %>
+</p>
+
+<p>
+  <%= form.label :aim_login %>
+  <%= form.text_field :aim_login %>
+</p>
+
+<p>
+  OpenID:
+  <%= form.label :identity_url %>
+  <%= form.text_field :identity_url %>
+</p>
+
+<p>
+	<%= form.label :email %>
+  <%= form.text_field :email %>
+</p>
+
+<p>
+	<%= form.label :password %>
+  <%= form.password_field :password %>
+</p>
+
+<p>
+	<%= form.label :password_confirmation, "Confirm Password" %>
+  <%= form.password_field :password_confirmation %>
+</p>
+
+<p>
+	<%= form.label :time_zone %>
+	<%= form.text_field :time_zone, :readonly => true %>
+</p>
+<p>Your timezone is set automatically by checking the offset from your browser.
+  So, don't worry if the name is incorrect, as long as the hour offset matches.</p>

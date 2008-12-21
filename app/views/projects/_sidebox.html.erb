@@ -1,0 +1,90 @@
+<% box(:sidebar, 'projects') do |sbox| %>
+  <% sbox.title = "Projects and time today" %>
+  <% sbox.content_classes = "nopad" %>
+  
+  <% sbox.header_utils = capture do %>
+    <div id="tool-tabs">
+      <a href="#projectlist">Projects</a>
+      <a href="#newproject">Create</a>
+      <% if current_user.archived_projects %>
+      <a href="#archived">Archived</a>
+      <% end rescue '' %>
+    </div>
+  <% end %>
+  
+  <% content_for :dom_loaded do %>
+	  new Control.Tabs("tool-tabs", {
+	    linkSelector: 'a',
+	    afterChange: function(container) {
+	      var item = container.readAttribute('id');
+	      if(item == "projectlist") {
+	        $('sbox-projects').down('h3').update("Projects and time today");
+	      } else if(item == "newproject") {
+	        $('sbox-projects').down('h3').update("Add a new project");
+	      }
+	    }
+	    });
+	<% end %>
+  
+  <% sbox.content = capture do %>
+  <div id="projectlist">
+    <ul class="text-list" id="project-lists">
+    <% unless current_user.projects.empty? %>
+    <% current_user.memberships.contexts.each do |context, memberships| %>
+      <% total_project = memberships.map { |m| m.project.statuses.filtered_hours(nil, :daily) } %>
+      <% total_user_hours = total_project.sum { |m| m.total(current_user) } %>
+      <% total_project_hours = total_project.sum { |m| m.total } %>
+      <li class='context'>
+        <a href="<%= url_for_context context %>">
+          <span class="ttl"><%= context ? h(context.name) : :etc %></span>
+          <span class="desc">&nbsp;</span>
+          <span class="you">
+            <span class="num"><%= number_with_precision total_user_hours, 2 %></span>
+            <span class="meta">you</span>
+          </span>
+          <span class="others">
+            <span class="num"><%= number_with_precision total_project_hours - total_user_hours, 2 %></span>
+            <span class="meta">others</span>
+          </span>
+        </a>
+      </li>
+    	<% memberships.each_with_index do |membership, index| -%>
+    	  <% project = membership.project %>
+  			<% project_hours = project.statuses.filtered_hours(nil, :daily) ; user_hours = project_hours.total(current_user) -%>
+        <li<%= %( class="last") if first_in_collection?(current_user.projects, index) %> id="project-<%= project.id %>">
+          <a href="<%= url_for project %>">
+            <span class="ttl"><%=h project.name %></span>
+            <span class="desc">message using <em class="project-code">@<%=h membership.code %></em></span>
+            <span class="you">
+              <span class="num"><%= number_with_precision user_hours, 2 %></span>
+              <span class="meta">you</span>
+            </span>
+            <span class="others">
+              <span class="num"><%= number_with_precision project_hours.total - user_hours, 2 %></span>
+              <span class="meta">others</span>
+            </span>
+          </a>
+          <div id="showcase-project-<%= project.id %>" style="display:none">
+            <h3>Edit <%= h(project.name) %></h3>
+            <%= error_messages_for :project %>
+              <% form_for project, :html => {:class => "form" } do |f| -%>
+              <%= render :partial => "projects/form", :object => f %>
+            <% end %>
+          </div>
+        </li>
+    	  <% end -%>
+      <% end -%>
+  	<% else %>
+    	<% new_project_text = capture do %>
+    	  <span class="ttl">You don't have any projects</span>
+        <span class="desc">Create one now?</span>
+    	<% end %>
+  	<% end %>
+    </ul>
+  </div>
+  
+  <div id="newproject" style="padding:9px">
+    <%= render :partial => '/projects/new' %>
+  </div>
+  <% end -%>
+<% end -%>

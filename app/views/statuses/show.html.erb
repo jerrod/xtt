@@ -1,0 +1,205 @@
+<% box(:special, "overview") do |box| %>
+  <% if @status.finished_at %>
+    <% box.title = "#{@status.created_at.strftime('%A, %B %d %I:%M %p')}  - #{@status.finished_at.strftime("%A, %B %d %I:%M %p")}" %>
+  <% else %>
+    <% box.title = %(#{@status.created_at.strftime('%A, %B %d %I:%M %p')} - Now) %>
+  <% end %>
+  
+  <% box.content = capture do %>
+  <ul class="media-list">
+    <li class="media-item clearfix last">
+      <div class="media">
+        <%= link_to gravatar_for(@status.user), @status.user %>
+      </div>
+      <div class="media-content">
+        <h4 class="media-title"><%= link_to_status @status %></h4>
+        <p class="quiet">posted <%= status_at @status %> 
+        from <%=h @status.source || "the web" %>
+        </p>
+
+        <% if @status.followup.nil? %>
+        <span class="others">
+          <span class="num"><%= nice_timer_for @status %></span>
+          <span class="meta">logged</span>
+        </span>
+        <% else %>
+        <span class="others">
+          <span class="num"><%= @status.hours.to_f %></span>
+          <span class="meta">hour<%= :s unless @status.hours == 1.0 %></span>
+        </span>
+        <% end %>
+      </div>
+    </li>
+  </ul>
+  <% end %>
+<% end %>
+
+<% if @status.previous && @status.created_at < @status.previous.finished_at.change(:sec => 0) -%>
+  <% box :normal, 'valid' do |box| -%>
+    <% box.title = "Warning: Overlap" -%>
+    <% box.content = capture do %>
+      <p>This status starts before the previous status finish time.  Adjust the start time, or finish 
+        <%= link_to "the previous status", @status.previous %> earlier.</p>
+    <% end %>
+  <% end -%>
+  <%= yield :valid_box %>
+<% end -%>
+
+
+<% box :normal, 'form' do |box| %>
+  <% box.title = "Modify this status" %>
+  <% box.header_utils = capture do %>
+    <div id="tool-tabs">  
+      <% unless @status.active? %><a href="#status-hours">Details</a><% end %>
+      <a href="#status-time">Advanced Details</a>
+    </div>
+  <% end %>
+  <% box.content = capture do %>
+    <% unless @status.active? -%>
+    <div id="status-hours">
+      <% form_for @status, :html => { :id => 'edit-status-hours', :class => 'form' } do |f| -%>
+      <%= f.error_messages %>
+      <table cellspacing="0" cellpadding="0" class="tblform">
+        <tr>
+          <th>
+            <%= f.label :message %>
+          </th>
+          <td>
+            <%= f.text_field :code_and_message %>
+          </td>
+        </tr>
+        <tr>
+          <th>
+            <%= f.label :set_hours, "Total hour(s) worked:" %>
+          </th>
+          <td>
+            <%= f.text_field :set_hours %>
+            <p class="quiet">Modifying your time could potentially cause overlap with your other statuses.</p>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <p class="btns">
+              <%= save_button %>
+              <%= hidden_field_tag :destination, params[:destination] %>
+            </p>
+          </td>
+        </tr>
+      </table>
+      <% end # form -%>
+    </div>
+    <% end # active -%>
+    <div id="status-time">
+      <% form_for @status, :html => { :id => 'edit-status-times', :class => 'form' } do |f| -%>
+        <%= f.error_messages %>
+        <table cellspacing="0" cellpadding="0" class="tblform">
+          <tr>
+            <th>
+              <%= f.label :message %>
+            </th>
+            <td>
+              <%= f.text_field :code_and_message %>
+            </td>
+          </tr>
+          <tr>
+            <th>
+              <%= f.label :created_at, "Start Time:" %>
+            </th>
+            <td>
+              <%= f.date_select :created_at %> time:
+              <%= f.time_select :created_at %>
+            </td>
+          </tr>
+          <% unless @status.active? -%>
+          <tr>
+            <th>
+              <%= f.label :finished_at, "End Time:" %>
+            </th>
+            <td>
+              <%= f.date_select :finished_at %> time:
+              <%= f.time_select :finished_at %>
+            </td>
+          </tr>
+          <% end -%>
+          <tr>
+            <td colspan="2">
+              <p class="btns"><%= save_button %></p>
+            </td>
+          </tr>
+        </table>
+      <% end %>
+      </div>
+    <% end %>
+<% end %>
+
+
+<% content_for :dom_loaded do %>
+  new Control.Tabs("tool-tabs", {
+    linkSelector: 'a'
+    });
+<% end %>
+
+<%= yield :normal_box %>
+
+
+<% box(:sidebar, 'details') do |sbox| %>
+  <% sbox.title = "Timeline" %>
+  <% sbox.content_classes = "nopad" %>
+  <% sbox.content = capture do %>
+    <ul id="status-list">
+      <% if @status.previous %>
+      <li<%= %( class="last") if @status.followup.nil? %>>
+        <a href="<%= status_path(@status.previous) %>">
+          <span class="quiet">Previous status</span>
+          <em><%= @status.previous.project ? @status.previous.project.name : "Out" %>: <%=h @status.previous.message %></em>
+          <span class="start-fin">
+            <span class="start">
+              <span class="time"><%= start_time_for(@status.previous) %></span>
+              <span class="month"><%= js_day @status.previous.created_at %></span>
+            </span>
+            <span class="dash">-</span>
+            <span class="finish">
+              <span class="time"><%= finish_time_for(@status.previous) %></span>
+              <span class="month"><%= js_day @status.previous.finished_at %></span>
+            </span>
+            <span class="equals">=</span>
+            <span class="hours">
+              <span class="time"><%= @status.previous.hours %></span>
+              <span class="month">hour<%= :s unless @status.previous.hours == 1.0 %></span>
+            </span>
+          </span>
+        </a>
+      </li>
+      <% end %>
+      <% if @status.followup %>
+      <li class="last">
+        <a href="<%= status_path(@status.followup) %>">
+          <span class="quiet">Next status</span>
+           <em><%= @status.followup.project ? @status.followup.project.name : "Out" %>: <%=h @status.followup.message %></em>
+          <span class="start-fin">
+            <span class="start">
+              <span class="time"><%= start_time_for(@status.followup) %></span>
+              <span class="month"><%= js_day @status.created_at %></span>
+            </span>
+            <span class="dash">-</span>
+            <span class="finish">              
+              <% unless @status.followup.active? %>
+              <span class="time"><%= finish_time_for(@status.followup) if @status.followup %></span>
+              <span class="month"><%= js_day @status.followup.finished_at %></span>
+              <% else %>
+              <span class="time">Now</span>
+              <span class="month"><%= js_day Time.now %></span>
+              <% end %>
+            </span>
+            <span class="equals">=</span>
+            <span class="hours">
+              <span class="time"><%= @status.followup.hours %></span>
+              <span class="month">hour<%= :s unless @status.followup.hours == 1.0 %></span>
+            </span>
+          </span>
+        </a>
+      </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>

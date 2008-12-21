@@ -1,0 +1,5 @@
+if @membership.new_record?
+  page.alert('that user is already a member of this group')
+else
+  page.alert('Done!  RJS NotImplementedError')
+end

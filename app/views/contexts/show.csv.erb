@@ -1,0 +1,4 @@
+<% @statuses.each do |status| -%>
+<%=h status.created_at %>,<%= csv status.project.name %>,<%= csv status.user.login %>,<%= csv status.message %>,<%= status.hours %>
+<% end -%>
+,<%=h @context.name %>,,,<%= @statuses.sum(&:hours) %>

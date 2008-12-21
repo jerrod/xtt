@@ -1,0 +1,187 @@
+body {
+  background: #d7d7d7; /* url(/images/iphone/background.png) repeat-x; */
+  color: #313131;  
+  min-width: 320px;
+  width: 99%;
+  -webkit-text-size-adjust: none;
+  font-family: Helvetica;
+  font: normal 12px/1.5em "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+#content {
+  margin: 0px 0;
+  padding-bottom: 10px;
+  border-bottom: 10px solid black;
+}
+
+.mblock {
+  -moz-border-radius: 6px;
+  -webkit-border-radius: 6px;
+  background: #f7f7f7;  
+  margin: 18px 9px;
+}
+
+.mblock-hdr {
+  position: relative;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.mblock-hdr .utils {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  font-size: 92%;
+}
+
+.mblock-hdr .utils a {
+  margin-left: 7px;
+  padding: 2px;
+}
+
+.mblock-hdr .utils a:hover {
+  background-color: #aaa;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+.utils a.active {
+  background-color: #06f;
+  color: #fff;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+}
+
+.mblock-footer {
+  padding: 8px 12px;
+  border-top: 1px solid #D8D6CC;
+  font-weight: bold;
+  text-align: right;
+}
+
+.mblock-hdr h3 {
+  font-size: 100%;
+}
+
+.mblock-cnt {
+  padding: 18px;
+}
+
+.mblock.special {
+  background-color: #cacaca;
+}
+
+.mblock.special .mblock-hdr {
+  border-bottom: 1px solid #aaa;
+}
+
+.mblock h4 {
+  font-size: 100%;
+}
+
+.mblock.special h4 a {
+  color: #333;
+}
+
+.mblock.special p.quiet {
+  color: #555;
+}
+
+.mblock.special .datetime {
+  color: #777;
+}
+
+.media-list li {
+  border-top: 1px solid #ededed;
+  border-bottom: 1px solid #aaa;
+  padding: 9px 0;
+  list-style: none;
+  position: relative;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+.special .media-list li {
+  border-bottom: 1px solid #aaa;
+  border-top: 1px solid #ddd;
+}
+
+.media-list li.last, 
+.text-list li.last, li.last {
+  border-bottom: none !important;
+}
+
+.media-item.status-form {
+  padding-top: 0;
+}
+
+.thumbnail {
+  padding: 3px;
+  margin-top: 5px;
+  background-color: #fff;
+}
+
+.media {
+  float: left;
+}
+
+.media-item h4 {
+  margin-right: 50px;
+  font-weight: bold;
+}
+
+h4.status a {
+  color: #656565;
+}
+
+h4.status a:hover {
+  color: #222;
+  background-color: #fff;
+}
+
+.media-item a {
+  font-weight: bold;
+}
+
+.media-content {
+  margin-left: 63px;
+  padding-top: 0px;
+  position: relative;
+}
+
+.media-item .datetime {
+  font-size: 92%;
+  color: #999;
+  float: right;
+}
+
+/* @group forms */
+.form label {
+  font-weight: bold;
+  display: block;
+}
+
+.form .btns {
+  margin-top: 9px;
+}
+
+.form input {
+  margin-bottom: 9px;
+}
+
+.form input[type=text], .form input[type=password], .form textarea  {
+  font-size: 140%;
+  border: 1px solid #999;
+  border-bottom-color: #bbb;
+  border-right-color: #bbb;
+}
+
+
+
+
+/* @end */

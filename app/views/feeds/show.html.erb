@@ -1,0 +1,40 @@
+<% box(:special, 'profile') do |box| %>
+  <% box.title = "Feed: #{h(@feed.name)} " + link_to('edit', edit_feed_path(@feed)) %>
+  <% box.xheader_utils = capture do %>
+    <%= link_to 'Profile', {}, :id => 'tab-profile' %> 
+    <%= link_to 'Notifications', :id => 'tab-notification' %>
+    <%= link_to 'Colors', :id => 'tab-colors' %>
+  <% end %>
+  
+  <% box.content = capture do %>
+  <div id="profile-content">
+    <p>URL: <%=h @feed.url %></p>
+    <h3>Preview</h3>
+    <table>
+    <tbody>
+    <% @feed.items.each do |item| %>
+      <tr>
+        <% if status = @feed.status_for(item) %>
+          <% if status.project and status.project == @feed.project -%>
+          <td>:)</td>
+          <% else -%>
+            <% if status.project.nil? %>
+            <td>You weren't on a project: <%= link_to h(status.message), status %></td>
+            <% else %>
+            <td>Warning: you were working on <%= link_to h(status.project.name), status.project %></td>
+            <% end %>
+          <% end -%>
+        <% else %>
+          <td>Couldn't find a status</td>
+        <% end %>
+        <td><%=h item[:created_at] %></td>
+        <td><a href="<%= Feed.ticket_url(item[:number]) %>">Ticket #<%=h item[:number] %></a></td>
+        <td><%=h item[:title] %></td>
+      </tr>
+    <% end %>
+    </tbody>
+    </table>
+  </div>
+  <% end %>
+  
+<% end %>

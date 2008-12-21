@@ -1,0 +1,47 @@
+#showcase {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent url(../images/overlay.png);
+  z-index: 20;
+}
+
+#showcase-content {
+  position: absolute;
+  top: 30%;
+  left: 40%;
+  background: #eee;
+  width: 400px;
+  height: 200px;
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  text-align: left;
+}
+
+#showcase-content h3 {
+  border-bottom: 1px solid #ccc;
+  padding: 5px 8px;
+  font-size: 100%;
+}
+
+#showcase-content form {
+  padding: 18px;
+}
+
+#showcase-content form label {
+  margin-top: 9px;
+  color: #777;
+}
+
+#showcase-content form input {
+  font-size: 100%;
+}
+
+.closebtn {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}

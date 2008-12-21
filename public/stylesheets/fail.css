@@ -1,0 +1,28 @@
+.clearfix {height:1px;}
+
+#header {
+  width: 100%;
+  padding: 1px;
+}
+
+#content {
+  width: 1009px;
+}
+
+#sidebar {
+  float: right;
+}
+
+.media-content {
+  zoom: 1;
+}
+
+.btn {
+  background-image: url(../images/btns/update.png);
+  background-repeat: no-repeat;
+  background-position: 0 0;
+}
+
+.btn:hover {
+  background-position: 0 -20px;
+}

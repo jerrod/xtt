@@ -1,0 +1,140 @@
+body {
+  font-size: 80%;
+}
+
+/* ripped from screen.css */
+.text-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.text-list li {
+  padding: 10px 8px;
+  border-bottom: 1px solid #e2e2e2;
+  position: relative;
+}
+
+#header {
+  padding: 5px 10px;
+  width: 100%;
+  height: 1.8em;
+  background-color: #900;
+  border-bottom: 1px solid #600;
+}
+#header a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 2px 0px;
+}
+
+#currently {
+  background-color: #888;
+  color: white;
+  position: relative;
+  vertical-align: middle;
+  padding: 5px 10px;
+  border-bottom: 4px solid #666;
+}
+#currently p {
+  padding: 0;
+  margin: 5px 0;
+  font-size: 180%;
+}
+#currently a {
+  color: black;
+}
+
+#content {
+  padding: 0px;
+}
+
+.text-list li {
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #aaa;
+  background-color: #ccc;
+}
+.text-list li a {
+  text-decoration: none;
+  color: #888;
+}
+
+#status {
+  background-color: #ccc;
+  padding: 10px 10px 5px 10px;
+}
+
+.btn {
+  height: 20px;
+  background: url(../images/btns/update.png) 0 0 no-repeat;
+  width: 80px;
+}
+.btn.save { background: url(../images/btns/save.gif) 0 0 no-repeat; }
+.btn.signin { background: url(../images/btns/signin.gif) 0 0 no-repeat; }
+.btn.send { background: url(../images/btns/send.gif) 0 0 no-repeat; }
+.btn.out { 
+  width: 63px;
+  background: url(../images/btns/out.gif) 0 0 no-repeat;
+}
+
+
+div h2 { padding: 10px;}
+
+.status-entry {
+  font-size: 140%;
+  font-family: Helvetica, Arial, sans-serif;
+  margin-bottom: 9px;
+  width: 280px !important;
+  border: 1px solid #999;
+  border-bottom-color: #bbb;
+  border-right-color: #bbb;
+}
+
+
+#footer {
+  background-color: black;
+  color: #aaa;
+  padding: 10px;
+  text-align: center;
+  font-size: 80%;
+}
+
+
+ol.media-list {
+  margin: 0 10px;
+  padding: 0;
+  list-style: none;
+}
+ol.media-list li {
+  margin: 0;
+  padding: 0;
+}
+
+.num {
+  font-size: 110%;
+  font-weight: bold;
+  display: block;
+  color: #555;
+}
+
+.others {
+  position: absolute;
+  top: 0px;
+  right: 0;
+  width: 50px;
+  display: block;
+  text-align: center;
+}
+
+#status-list span.quiet {
+  color: #888;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 92%;
+}
+
+.special-num .quiet {
+  font-weight: bold;
+  color: #555;
+}

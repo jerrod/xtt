@@ -1,0 +1,32 @@
+<div class='row'>
+  <p>
+    <label for="membership_code">Your code for posting to this project?</label>
+    <span class="at">@</span>
+    <%= form.text_field :code %>
+  </p>
+  <p class='help'>
+    For example: '@<%=h truncate(form.object.code) %>'.
+    <% if form.object.project.users.count > 1 %>
+    Changing this will not alter other project members' codes.
+    <% end %>
+  </p>
+</div>
+
+<div class='row final'>
+  <p>
+    <label for='membership_context_name'>Group with other Projects?</label>
+    <%= form.text_field :context_name, :size => 10 %>
+  </p>
+
+  <% unless current_user.contexts.empty? %>
+    <p>Leave blank for no group.</p>
+    <div id='membership_context_name_options' class='text_field_options clearfix'>
+      <% current_user.contexts.each do |context| %>
+      <div><%= context.name %></div>
+      <% end %>
+    </div>
+
+  <% else %>
+    <p>For example: 'client one' or 'personal'. Leave blank for no group.</p>
+  <% end %>
+</div>
