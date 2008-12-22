@@ -6,6 +6,7 @@ document.observe('dom:loaded', function() {
   // When pressing the return key, post the form.
   var statusMessage = $('status_code_and_message');
   if(statusMessage)
+    statusMessage.focus();
     statusMessage.observe('keypress', function(event) {
       if(event.keyCode === Event.KEY_RETURN) {
         this.up('form').submit();
