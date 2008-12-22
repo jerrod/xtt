@@ -47,11 +47,13 @@
   $('use-openid').observe('click', function() {
     $('unamepass').hide();
     $('openid').show();
+    $('openid_url').focus();
   });
   
   $('use-standard').observe('click', function() {
     $('openid').hide();
     $('unamepass').show();
+    $('login').focus();
   })
   
   new Control.Tabs("tool-tabs", {
