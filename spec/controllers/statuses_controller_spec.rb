@@ -17,6 +17,21 @@ describe StatusesController, "GET #index for user" do
   it_renders :xml, :statuses
 end
 
+describe StatusesController, "GET #last for user" do
+  define_models
+
+  act! { get :last, :format => 'xml' }
+
+  before do
+    @status = statuses(:default)
+    login_as :default
+    @user.stub!(:last_status).and_return(@status)
+  end
+
+  it_assigns :status
+  it_renders :xml, :status
+end
+
 describe StatusesController, "GET #new" do
   define_models
   act! { get :new }

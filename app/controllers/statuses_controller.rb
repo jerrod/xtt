@@ -14,6 +14,14 @@ class StatusesController < ApplicationController
     end
   end
 
+  def last
+    @status = current_user.last_status
+
+    respond_to do |format|
+      format.xml  { render :xml  => @status }
+    end
+  end
+
   def new
     @status = Status.new
 

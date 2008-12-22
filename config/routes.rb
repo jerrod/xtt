@@ -4,7 +4,7 @@ ActionController::Routing::Routes.draw do |map|
   map.root :controller => 'users', :action => 'index'
 
   map.resources :helps, :controller => "help"
-  map.resources :statuses, :collection => { 'import' => :get }
+  map.resources :statuses, :collection => { 'import' => :get, :last => :get }
   map.resources :projects, :member     => { :invite => :post }
   map.resources :contexts, :notifies, :tendrils
   
