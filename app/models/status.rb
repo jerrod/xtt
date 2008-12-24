@@ -102,6 +102,10 @@ protected
       offset = $1.to_s.to_f
       self.created_at = Time.now - offset.hours
       
+    elsif message.gsub!(/\s*\[\-(\d+[:]\d+\s*)h?\]/, '')
+      offset = Time.parse($1) - Time.parse("0:00")
+      self.created_at = Time.now - offset
+      
     elsif message.gsub!(/\s*\[(\d+[:]\d+(?:am|pm)?)\]$/, '')
       # This is faulty because it doesn't apply the user's timezone
       self.created_at = Time.parse($1)
