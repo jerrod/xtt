@@ -123,6 +123,12 @@ describe Status, "being created" do
     @new.created_at.should == Time.now - 2.hours
     @new.message.should == "Wassup?"
   end
+  
+  it "sets the time in the past as decimal hours" do
+    @new.message = "Hmmm. [-2.5h]"
+    @new.save!
+    @new.created_at.should == Time.now - 2.5.hours
+  end
 
   it "sets the start time manually" do
     @new.message = "Howdy [2:30pm]"

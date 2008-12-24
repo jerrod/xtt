@@ -98,8 +98,8 @@ protected
       offset = $1.to_s.to_i
       #message.gsub!(/\s\[\-#{offset}\]/, '')
       self.created_at = Time.now - offset.minutes
-    elsif message.gsub!(/\s*\[\-(\d+)h(ours)?\]$/, '')
-      offset = $1.to_s.to_i
+    elsif message.gsub!(/\s*\[\-([\d\.]+)h(ours)?\]$/, '')
+      offset = $1.to_s.to_f
       self.created_at = Time.now - offset.hours
       
     elsif message.gsub!(/\s*\[(\d+[:]\d+(?:am|pm)?)\]$/, '')
