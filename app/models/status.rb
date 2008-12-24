@@ -93,14 +93,18 @@ protected
 
   def parse_time_from_message
     return if message.blank? 
-    if message =~ /\s\[\-(\d+)\]$/
+    message.strip!
+    if message.gsub!(/\s*\[\-(\d+)\]$/, '')
       offset = $1.to_s.to_i
-      message.gsub!(/\s\[\-#{offset}\]/, '')
+      #message.gsub!(/\s\[\-#{offset}\]/, '')
       self.created_at = Time.now - offset.minutes
-
-    elsif message =~  /\s\[(\d+[:]\d+(?:am|pm)?)\]$/
+    elsif message.gsub!(/\s*\[\-(\d+)h(ours)?\]$/, '')
+      offset = $1.to_s.to_i
+      self.created_at = Time.now - offset.hours
+      
+    elsif message.gsub!(/\s*\[(\d+[:]\d+(?:am|pm)?)\]$/, '')
+      # This is faulty because it doesn't apply the user's timezone
       self.created_at = Time.parse($1)
-      message.gsub!(/\s\[#{$1}\]/, '')
     end
   end
 
